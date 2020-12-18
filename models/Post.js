@@ -15,16 +15,19 @@ const postSchema = new mongoose.Schema({
 	},
 	tags: [String],
 	photo: String,
-	author: mongoose.Schema.Types.ObjectId,
+	author: {
+		type: mongoose.Types.ObjectId,
+		ref: 'User',
+	}
 })
 
-postSchema.pre('save', async function(next) {
+postSchema.pre('save', async function (next) {
 	// condição sempre que adiciona um novo title
-	if(this.isModified('title')) {
+	if (this.isModified('title')) {
 		const slugRegex = new RegExp(`^(${this.slug})((-[0-9]{1,}$)?)$`, 'i');
-		const postWithSlug = await this.constructor.find({slug: slugRegex});
+		const postWithSlug = await this.constructor.find({ slug: slugRegex });
 
-		if(postWithSlug.length > 0) {
+		if (postWithSlug.length > 0) {
 			this.slug = `${this.slug}-${postWithSlug.length + 1}`
 		}
 	};
@@ -33,33 +36,39 @@ postSchema.pre('save', async function(next) {
 
 postSchema.statics.getTagsList = function () {
 	return this.aggregate([
-		{$unwind: '$tags'},
+		{ $unwind: '$tags' },
 		{
-			$group: { 
-			_id: '$tags', 
-			count: {$sum: 1}},
+			$group: {
+				_id: '$tags',
+				count: { $sum: 1 }
+			},
 		},
 		// ordenando em ordem decrescente;
-		{$sort: {count: -1}}
+		{ $sort: { count: -1 } }
 	]);
 }
 
 postSchema.statics.findPosts = function (filters = {}) {
-	return this.aggregate([
-		{$match: filters},
-		{$lookup: {
-			from: 'users',
-			let: {'author': '$author'},
-			pipeline: [
-				{$match: {$expr: {$eq: ['$$author', '$_id']}}},
-				{$limit: 1}
-			],
-			as: 'author'
-		}},
-		{$addFields: {
-			'author': {$arrayElemAt: ['$author', 0]}
-		}}
-	]);
+	return this.find(filters).populate('author');
+	// return this.aggregate([
+	// 	{ $match: filters },
+	// 	{
+	// 		$lookup: {
+	// 			from: 'users',
+	// 			let: { 'author': '$author' },
+	// 			pipeline: [
+	// 				{ $match: { $expr: { $eq: ['$$author', '$_id'] } } },
+	// 				{ $limit: 1 }
+	// 			],
+	// 			as: 'author'
+	// 		}
+	// 	},
+	// 	{
+	// 		$addFields: {
+	// 			'author': { $arrayElemAt: ['$author', 0] }
+	// 		}
+	// 	}
+	// ]);
 }
 
 module.exports = mongoose.model('Post', postSchema)

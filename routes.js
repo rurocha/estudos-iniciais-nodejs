@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const imageMiddleware = require('./middlewares/imageMiddleware');
-const userMiddleware = require('./middlewares/userMiddleware');
+const authMiddleware = require('./middlewares/authMiddleware');
 
 const homeController = require('./controllers/homeController');
 const postController = require('./controllers/postController');
@@ -14,20 +14,31 @@ router.get('/users/login', userController.login);
 router.post('/users/login', userController.loginAction);
 router.get('/users/register', userController.register);
 router.post('/users/register', userController.registerAction);
+router.get('/users/forget', userController.forget);
+router.post('/users/forget', userController.forgetAction);
+
+router.get('/users/reset/:token', userController.forgetToken);
+router.post('/users/reset/:token', userController.forgetTokenAction);
+
+router.get('/profile', authMiddleware.isLogged, userController.profile);
+router.post('/profile', authMiddleware.isLogged, userController.profileAction);
+router.post('/profile/password', authMiddleware.isLogged, authMiddleware.changePassword);
+
+
 router.get('/users/logout', userController.logout);
 
-router.get('/post/add', userMiddleware.isLogged, postController.add);
+router.get('/post/add', authMiddleware.isLogged, postController.add);
 router.post('/post/add',
-    userMiddleware.isLogged,
-    imageMiddleware.upload, 
+    authMiddleware.isLogged,
+    imageMiddleware.upload,
     imageMiddleware.resize,
     postController.addAction
 );
-router.get('/post/:slug', userMiddleware.isLogged, postController.view);
-router.get('/post/:slug/edit', userMiddleware.isLogged, postController.edit);
-router.post('/post/:slug/edit', 
-    userMiddleware.isLogged,
-    imageMiddleware.upload, 
+router.get('/post/:slug', authMiddleware.isLogged, postController.view);
+router.get('/post/:slug/edit', authMiddleware.isLogged, postController.edit);
+router.post('/post/:slug/edit',
+    authMiddleware.isLogged,
+    imageMiddleware.upload,
     imageMiddleware.resize,
     postController.editAction
 );
