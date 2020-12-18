@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Home</title>
+</head>
+
+<body>
+	<!--usando a partial header -->
+	{{> header}}
+
+	<!--usando helpers setado no app.js -->
+	<h1>{{helpers.ruan}}</h1>
+	<!-- booleano para exibir conteudo condicionalmente -->
+	{{#mostrar}}
+	<h2>{{nome}}</h2>
+	{{/mostrar}}
+
+	<ul>
+		<!-- ja consegue compreender que é um array e faz o loop -->
+		{{#ingredientes}}
+		<li>{{nome}}, quantidade: {{qtd}}</li>
+		{{/ingredientes}}
+	</ul>
+
+	<!--se o array estiver vazio ele renderiza esse paragrafo -->
+	{{^ingredientes}}
+	<p>não há ingredientes no array</p>
+	{{/ingredientes}}
+
+	<!--com 3 bigodes ele interpreta como html -->
+	<p>{{{negrito}}}</p>
+</body>
+
+</html>

@@ -1,1 +1,31 @@
-<h1>HEADER</h1>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<link rel="stylesheet" href="/assets/css/app.css"/>
+</head>
+<body>
+	<header>
+		<ul>
+				{{#helpers.menu}}
+				<li>
+						<a href="{{slug}}">{{name}}</a>
+				</li>
+				{{/helpers.menu}}
+		</ul>
+	</header>
+	<hr>
+
+	
+	{{#flashes}}
+		{{#success}}
+		<div class="warning">{{.}}</div>
+		{{/success}}
+		
+		{{#error}}
+		<div class="warning">{{.}}</div>
+		{{/error}}
+		
+		{{#info}}
+		<div class="warning">{{.}}</div>
+		{{/info}}
+	{{/flashes}}
