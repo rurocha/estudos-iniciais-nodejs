@@ -34,7 +34,7 @@ router.post('/post/add',
     imageMiddleware.resize,
     postController.addAction
 );
-router.get('/post/:slug', authMiddleware.isLogged, postController.view);
+router.get('/post/:slug', postController.view);
 router.get('/post/:slug/edit', authMiddleware.isLogged, postController.edit);
 router.post('/post/:slug/edit',
     authMiddleware.isLogged,
